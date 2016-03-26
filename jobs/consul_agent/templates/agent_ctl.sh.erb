@@ -93,7 +93,16 @@ function start() {
   export GOMAXPROCS
 
   local nameservers
-  nameservers=("$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}' | grep -Ev '127.0.0.1\b')")
+
+  nameservers=`cat /etc/resolv.conf | grep nameserver | awk '{print $2}' | grep -Ev '127.0.0.1'`
+  if [ "$nameservers" = "" ]
+  then
+      echo "Unable to start consul due to name server setting missing in /etc/resolve.conf! "
+      exit 1
+  else
+      nameservers=("$(echo $nameservers)")
+  fi
+
 
   local recursors
   recursors=""
